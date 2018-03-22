@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Food Deserts</title>
+    <!-- Include Boostrap Styles -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Include JQuery and Boostrap scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="intro" class="jumbotron jumbotron-fluid p-4">
+        <h1>Food Deserts</h1>
+        This page displays a list of food sources nearby a location
+    </div>
+    <div class="container-fluid form-group m-3">
+        <div class="row">
+            <div id="leftPane" class="col col-md-3 border-right bg-info p-3 rounded">
+                <h3>Finding Healthy Food in DC and the Surrounding Areas</h3>
+                <div id="grocery" class="bg-light p-2 m-1 rounded"><h5>Grocery Stores</h5>
+                    <ul id="groceryList" class="list-group"></ul>
+                </div>
+                <div id="farmers" class="bg-light p-2 m-1 rounded"><h5>Farmers Markets</h5>
+                    <ul id="farmersList" class="list-group"></ul>
+                </div>
+                <div id="summer" class="bg-light p-2 m-1 rounded">
+                    <h5>Summer Food Programs</h5>
+                    <ul id="summerList" class="list-group"></ul>
+                </div>
+                <div id="healthy" class="bg-light p-2 m-1 rounded">
+                    <h5>Healthy Corner Stores</h5>
+                    <ul id="healthyList" class="list-group"></ul>
+                </div>
+            </div>
+            <div id="rightContent" class="col col-md-8 bg-light p-3 rounded">
+                <h3>Details of the Selected Location</h3>
+                <div id="locationDetails">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var locationsJSON = {
+                "locations": [{
+                    "name": "Safeway",
+                    "type": "Grocery",
+                    "address": "415 14th ST SE",
+                    "city": "Washington, DC 20003",
+                    "link": "https://goo.gl/maps/YdszfQsTjkG2",
+                    "lat": 38.88385,
+                    "long": -76.98553
+                }
+                , {
+                    "name": "Giant",
+                    "type": "Grocery",
+                    "address": "1400 7th Street NW",
+                    "city": "Washington, DC 20001",
+                    "link": "https://goo.gl/maps/grPKR2SkuMs",
+                    "lat": 38.908657,
+                    "long": -77.02192
+                }
+                , {
+                    "name": "Palisades Farmers Market",
+                    "type": "Farmers",
+                    "address": "2001 48th Pl NW",
+                    "city": "Washington, DC 20007",
+                    "link": "https://goo.gl/maps/QNBdWDf6Dn72",
+                    "lat": 38.917492,
+                    "long": -77.0966
+                }]
+            };
+
+            //populate list of locations
+            var newFarmersHTML = "";
+            var newGroceryHTML = "";
+            var newHealthyHTML = "";
+            var newSummerHTML = "";
+
+            $.each(locationsJSON.locations, function (i, item) {
+                //univerally remove spaces from name of item for id
+                switch (item.type) {
+                    case "Grocery":
+                        newGroceryHTML += "<li class='list-group-item'><div id='local_" + item.name.replace(/ /g, '') + "'><strong>" + item.name + "</strong></div></li>";
+                        break;
+                    case "Farmers":
+                        newFarmersHTML += "<li class='list-group-item'><div id='local_" + item.name.replace(/ /g, '') + "'><strong>" + item.name + "</strong></div></li>";
+                        break;
+                    case "Healthy":
+                        newHealthyHTML += "<li class='list-group-item'><div id='local_" + item.name.replace(/ /g, '') + "'><strong>" + item.name + "</strong></div></li>";
+                        break;
+                    case "Summer":
+                        newSummerHTML += "<li class='list-group-item'><div id='local_" + item.name.replace(/ /g, '') + "'><strong>" + item.name + "</strong></div></li>";
+                        break;
+                    default:
+                        break;
+                }
+            });
+            $("ul[id='groceryList']").html(newGroceryHTML);
+            $("ul[id='farmersList']").html(newFarmersHTML);
+            $("ul[id='summerList']").html(newSummerHTML);
+            $("ul[id='healthyList']").html(newHealthyHTML);
+
+            //when a user selects an item, provide additional details about it
+            $("div[id^='local_']").click(function () {
+                var itemToDisplay = $(this).attr("id");
+                var newLocationDetails = "No details available";
+                //check for matching item
+                $.each(locationsJSON.locations, function (i, item) {
+                    //univerally remove spaces from name of item for id
+                    if (("local_" + item.name.replace(/ /g, '')) == itemToDisplay) {
+                        //return details of matching item
+                        newLocationDetails = "<strong>" + item.name + "</strong><br />" + item.address + "<br />" + item.city + "<br /><a href='" + item.link + "' target='_blank'>Get Directions</a>";
+                        return;
+                    }
+                });
+                $("div[id='locationDetails']").html(newLocationDetails);
+            });
+        });
+    </script>
+</body>
+</html>
